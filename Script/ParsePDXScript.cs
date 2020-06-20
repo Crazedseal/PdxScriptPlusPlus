@@ -98,7 +98,7 @@ namespace PdxScriptPlusPlus.Script
 						if (CurrentCharacter == '\\' && !EscapedCharacters.Contains(currentPosition))
 						{
 							if (currentPosition + 1 < fileContents.Length)
-								EscapedCharacters.Contains(currentPosition + 1);
+								EscapedCharacters.Add(currentPosition + 1);
 
 							parseContext.CurrentValue += CurrentCharacter;
 						}
@@ -123,7 +123,7 @@ namespace PdxScriptPlusPlus.Script
 						}
 						else
 						{
-							parseContext.CurrentValue += '"';
+							parseContext.CurrentValue += CurrentCharacter;
 						}
 						break;
 					case ParseContext.ContextState.ValueBuilding:
@@ -172,6 +172,7 @@ namespace PdxScriptPlusPlus.Script
 						{
 							parseContext.CreateSingleNode();
 							parseContext.State = ParseContext.ContextState.Unknown;
+							parseContext.CurrentKey += CurrentCharacter;
 						}
 						break;
 					case ParseContext.ContextState.AfterOperator:

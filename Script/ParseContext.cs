@@ -89,6 +89,7 @@ namespace PdxScriptPlusPlus.Script
 			KeyValueNode construct = new KeyValueNode(this.File);
 			construct.SetParent(this.CurrentParent);
 			construct.Key = this.CurrentKey;
+			construct.Value = this.CurrentValue;
 			construct.Operator = this.CurrentOperator;
 			this.ResetNodeConstruction();
 			return construct;

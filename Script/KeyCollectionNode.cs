@@ -45,5 +45,36 @@ namespace PdxScriptPlusPlus.Script
 			child.SetParent(this);
 			this.Children.Add(child);
 		}
+
+		public void Print()
+		{
+			Stack<Node> nodeStack = new Stack<Node>();
+			nodeStack.Push(this);
+
+			while(nodeStack.Count > 0)
+			{
+				Node currentNode = nodeStack.Pop();
+
+				switch (currentNode)
+				{
+					case KeyCollectionNode kcn:
+						List<Node> reverse = new List<Node>(kcn.Children);
+						reverse.Reverse();
+						foreach (Node child in reverse) { nodeStack.Push(child); }
+						Console.WriteLine(kcn.Key + " = {");
+						break;
+					case KeyValueNode kvn:
+						Console.WriteLine(kvn.Key + " " + kvn.Operator + " " + kvn.Value);
+						break;
+					case CommentNode cn:
+						Console.WriteLine("#" + cn.Comment);
+						break;
+					case SingleValueNode svn:
+						Console.Write(svn.Value + " ");
+						break;
+
+				}
+			}
+		}
 	}
 }
