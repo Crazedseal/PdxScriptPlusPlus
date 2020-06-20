@@ -4,7 +4,14 @@ using System.Text;
 
 namespace PdxScriptPlusPlus.Script
 {
-    class INodeType
+    interface IKeyNode
     {
+         String Key { get; set; }
     }
+
+    interface IValueNode
+    {
+        String Value { get; set; }
+    }
+
 }

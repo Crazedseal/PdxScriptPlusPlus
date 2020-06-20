@@ -17,13 +17,14 @@ namespace PdxScriptPlusPlus.Script
         }
     }
 
-    class KeyNode
+    class CommentNode : Node
     {
-        public String Key { get; set; }
+        public String Comment { get; set; }
     }
 
-    class KeyCollectionNode : KeyNode
+    class KeyCollectionNode : Node, IKeyNode
     {
+        public String Key { get; set; }
         public List<Node> Children = new List<Node>();
 
         public void AddChild(Node child)
@@ -32,8 +33,15 @@ namespace PdxScriptPlusPlus.Script
         }
     }
 
-    class KeyValueNode : Node
+    class KeyValueNode : Node, IKeyNode, IValueNode
     {
-
+        public String Key { get; set; }
+        public String Value { get; set; }
     }
+
+    class SingleValueNode : Node, IValueNode
+    {
+        public String Value { get; set; }
+    }
+
 }
