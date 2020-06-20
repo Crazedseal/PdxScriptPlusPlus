@@ -233,12 +233,36 @@ namespace PdxScriptPlusPlus.Script
 
 			}
 
+			// Ensuring we do not drop the last node.
+			switch (parseContext.State)
+			{
+				case ParseContext.ContextState.AfterOperator:
+					parseContext.CreateKeyValueNode();
+					break;
+				case ParseContext.ContextState.Unknown: // Literally do nothing.
+					break;
+				case ParseContext.ContextState.CommentBuilding:
+					parseContext.CreateCommentNode();
+					break;
+				case ParseContext.ContextState.StateFinding:
+					parseContext.CreateSingleNode();
+					break;
+				case ParseContext.ContextState.StringBuilding:
+					parseContext.CurrentValue += '"'; // Close the String.
+					parseContext.CreateKeyValueNode();
+					break;
+				case ParseContext.ContextState.ValueBuilding:
+					parseContext.CreateKeyValueNode();
+					break;
+				case ParseContext.ContextState.KeyBuilding:
+					parseContext.CreateSingleNode();
+					break;
+			}
+
+
+
 			return result;
 		}
-
-		
-
-
 	}
 
 	struct ParsePDXScriptResult
