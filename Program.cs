@@ -11,6 +11,9 @@ namespace PdxScriptPlusPlus
             Console.WriteLine("Enter directory to compile or leave blank to target this directory: ");
             directory = Console.ReadLine();
 
+			Script.ParsePDXScript.ParseFile(directory);
+
+
             if (directory == String.Empty)
             {
                 // This Directory
@@ -19,6 +22,8 @@ namespace PdxScriptPlusPlus
             else
             {
                 Console.WriteLine("Directory: " + directory);
+
+
             }
 
             Console.ReadLine();
