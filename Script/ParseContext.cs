@@ -60,6 +60,32 @@ namespace PdxScriptPlusPlus.Script
 			}
 		}
 
+		public void Finalize()
+		{
+			ResetNodeConstruction();
+
+			Stack<Node> nodes = new Stack<Node>();
+			nodes.Push(this.Root);
+
+			while (nodes.Count > 0)
+			{
+				Node currentNode = nodes.Pop();
+				if (currentNode.GetType() == typeof(KeyCollectionNode))
+				{
+					KeyCollectionNode collectionNode = (KeyCollectionNode)currentNode;
+					foreach (Node child in collectionNode.Children) {
+						if (!collectionNode.IsRoot()) {
+							child.Depth = (byte)(collectionNode.Depth + 1);
+						}
+						nodes.Push(child);
+					}
+
+				}
+			}
+
+			this.Root.Children.Add(new CapNode(this.File));
+		}
+
 		public void ForceDiscardNode()
 		{
 			this.CurrentKey = "";

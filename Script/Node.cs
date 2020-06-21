@@ -8,11 +8,16 @@ namespace PdxScriptPlusPlus.Script
     {
         public KeyCollectionNode Parent { get; private set; }
         public String FileOrigin { get; private set; }
-
+		public Byte Depth = 0;
         public Node(String fileOrigin)
         {
             this.FileOrigin = fileOrigin;
         }
+
+		public virtual String GetString()
+		{
+			return "";
+		}
 
         public virtual void SetParent(KeyCollectionNode parent)
         {
@@ -26,14 +31,30 @@ namespace PdxScriptPlusPlus.Script
         }
     }
 
-    class CommentNode : Node
+	class CapNode : Node
+	{
+		internal CapNode(string fileOrigin) : base(fileOrigin)
+		{
+
+		}
+
+		
+	}
+
+	class CommentNode : Node
     {
         public CommentNode(String fileOrigin, String comment) : base(fileOrigin)
         {
             this.Comment = comment;
         }
 
-        public String Comment { get; set; }
+		public override string GetString()
+		{
+			return "#" + Comment;
+		}
+
+
+		public String Comment { get; set; }
     }
 
     
@@ -44,13 +65,23 @@ namespace PdxScriptPlusPlus.Script
         public String Key { get; set; }
         public String Value { get; set; }
 		public Char Operator { get; set; }
-    }
+
+		public override string GetString()
+		{
+			return Key + " " + Operator + " " + Value;
+		}
+	}
 
     class SingleValueNode : Node, IValueNode
     {
 		public SingleValueNode(string fileOrigin) : base(fileOrigin) { }
 
 		public String Value { get; set; }
-    }
+
+		public override string GetString()
+		{
+			return Value;
+		}
+	}
 
 }

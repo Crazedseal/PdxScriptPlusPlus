@@ -260,7 +260,7 @@ namespace PdxScriptPlusPlus.Script
 			}
 
 
-
+			parseContext.Finalize();
 			return result;
 		}
 	}

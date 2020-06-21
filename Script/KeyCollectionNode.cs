@@ -19,6 +19,11 @@ namespace PdxScriptPlusPlus.Script
 				return false;
 		}
 
+		public override string GetString()
+		{
+			return this.Key + " = {";
+		}
+
 		public ParseContext Context { get; private set; }
 
 		public Boolean SetContext(ParseContext context)
@@ -51,29 +56,44 @@ namespace PdxScriptPlusPlus.Script
 			Stack<Node> nodeStack = new Stack<Node>();
 			nodeStack.Push(this);
 
+			Node currentNode = null;
 			while(nodeStack.Count > 0)
 			{
-				Node currentNode = nodeStack.Pop();
+				Node previousNode = currentNode;
+				currentNode = nodeStack.Pop();
 
-				switch (currentNode)
+				if (previousNode != null && previousNode.Depth > currentNode.Depth)
 				{
-					case KeyCollectionNode kcn:
-						List<Node> reverse = new List<Node>(kcn.Children);
-						reverse.Reverse();
-						foreach (Node child in reverse) { nodeStack.Push(child); }
-						Console.WriteLine(kcn.Key + " = {");
-						break;
-					case KeyValueNode kvn:
-						Console.WriteLine(kvn.Key + " " + kvn.Operator + " " + kvn.Value);
-						break;
-					case CommentNode cn:
-						Console.WriteLine("#" + cn.Comment);
-						break;
-					case SingleValueNode svn:
-						Console.Write(svn.Value + " ");
-						break;
-
+					int depthDifference = previousNode.Depth - currentNode.Depth;
+					for (int i = 0; i != depthDifference; i++)
+					{
+						for (int j = 0; j < (previousNode.Depth-1) - i; j++)
+						{
+							Console.Write('\t');
+						}
+						Console.WriteLine("}");
+					}
 				}
+
+				for (int i = 0; i < currentNode.Depth; i++)
+				{
+					Console.Write('\t');
+				}
+
+				if (currentNode.GetType() == typeof(KeyCollectionNode))
+				{
+					KeyCollectionNode keyCollectionNode = (KeyCollectionNode)currentNode;
+					List<Node> reverse = new List<Node>(keyCollectionNode.Children);
+					reverse.Reverse();
+					foreach (Node child in reverse) { nodeStack.Push(child); }
+					if (!keyCollectionNode.IsRoot()) { Console.WriteLine(currentNode.GetString()); }
+				}
+				else
+				{
+					Console.WriteLine(currentNode.GetString());
+				}
+
+
 			}
 		}
 	}
