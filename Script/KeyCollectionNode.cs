@@ -6,9 +6,25 @@ namespace PdxScriptPlusPlus.Script
 {
 	class KeyCollectionNode : Node, IKeyNode
 	{
+		HashSet<Node> child_unique = new HashSet<Node>();
+
 		public KeyCollectionNode(String fileOrigin, String key) : base(fileOrigin)
 		{
 			this.Key = key;
+		}
+
+		public override Node Clone()
+		{
+			KeyCollectionNode clone = new KeyCollectionNode(this.FileOrigin, this.Key);
+			clone.Depth = this.Depth;
+			foreach (var child in this.Children)
+			{
+				Node childClone = child.Clone();
+				childClone.SetParent(clone);
+				
+			}
+
+			return clone;
 		}
 
 		public Boolean IsRoot()
@@ -48,7 +64,6 @@ namespace PdxScriptPlusPlus.Script
 		public void AddChild(Node child)
 		{
 			child.SetParent(this);
-			this.Children.Add(child);
 		}
 
 		public void Print()
@@ -95,6 +110,62 @@ namespace PdxScriptPlusPlus.Script
 
 
 			}
+		}
+
+		public String PrintString()
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			Stack<Node> nodeStack = new Stack<Node>();
+
+			CapNode cap = new CapNode(this.FileOrigin);
+			cap.Depth = this.Depth;
+
+			if (!this.IsRoot()) { nodeStack.Push(cap); }
+
+			nodeStack.Push(this);
+			int startingDepth = this.Depth;
+
+			Node currentNode = null;
+			while (nodeStack.Count > 0)
+			{
+				Node previousNode = currentNode;
+				currentNode = nodeStack.Pop();
+				
+				if (previousNode != null && previousNode.Depth > currentNode.Depth)
+				{
+					int depthDifference = previousNode.Depth - currentNode.Depth;
+					for (int i = 0; i != depthDifference; i++)
+					{
+						for (int j = startingDepth; j < (previousNode.Depth - 1) - i; j++)
+						{
+							stringBuilder.Append('\t');
+						}
+						stringBuilder.AppendLine("}");
+					}
+				}
+				if (currentNode.GetType() == typeof(CapNode)) { continue; }
+				for (int i = startingDepth; i < currentNode.Depth; i++) {
+					stringBuilder.Append('\t');
+				}
+
+				if (currentNode.GetType() == typeof(KeyCollectionNode))
+				{
+					KeyCollectionNode keyCollectionNode = (KeyCollectionNode)currentNode;
+					List<Node> reverse = new List<Node>(keyCollectionNode.Children);
+					reverse.Reverse();
+					foreach (Node child in reverse) { nodeStack.Push(child); }
+					if (!keyCollectionNode.IsRoot()) { stringBuilder.AppendLine(currentNode.GetString()); }
+				}
+				else
+				{
+					stringBuilder.AppendLine(currentNode.GetString());
+				}
+
+
+			}
+
+			String built = stringBuilder.ToString();
+			return built;
 		}
 	}
 }

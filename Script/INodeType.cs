@@ -12,6 +12,8 @@ namespace PdxScriptPlusPlus.Script
     interface IValueNode
     {
         String Value { get; set; }
-    }
+
+		Boolean HasStringValue();
+	}
 
 }

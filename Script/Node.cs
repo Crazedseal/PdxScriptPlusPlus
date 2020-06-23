@@ -9,6 +9,9 @@ namespace PdxScriptPlusPlus.Script
         public KeyCollectionNode Parent { get; private set; }
         public String FileOrigin { get; private set; }
 		public Byte Depth = 0;
+		public Boolean IsBeingCloned = false;
+		
+
         public Node(String fileOrigin)
         {
             this.FileOrigin = fileOrigin;
@@ -18,6 +21,9 @@ namespace PdxScriptPlusPlus.Script
 		{
 			return "";
 		}
+
+		public abstract Node Clone();
+
 
         public virtual void SetParent(KeyCollectionNode parent)
         {
@@ -38,7 +44,12 @@ namespace PdxScriptPlusPlus.Script
 
 		}
 
-		
+		public override Node Clone()
+		{
+			var clone = new CapNode(this.FileOrigin);
+			clone.Depth = this.Depth;
+			return clone;
+		}
 	}
 
 	class CommentNode : Node
@@ -48,11 +59,18 @@ namespace PdxScriptPlusPlus.Script
             this.Comment = comment;
         }
 
+
 		public override string GetString()
 		{
 			return "#" + Comment;
 		}
 
+		public override Node Clone()
+		{
+			var clone = new CommentNode(this.FileOrigin, this.Comment);
+			clone.Depth = this.Depth;
+			return clone;
+		}
 
 		public String Comment { get; set; }
     }
@@ -70,6 +88,21 @@ namespace PdxScriptPlusPlus.Script
 		{
 			return Key + " " + Operator + " " + Value;
 		}
+
+		public bool HasStringValue()
+		{
+			return this.Value.StartsWith('"') && this.Value.EndsWith('"');
+		}
+
+		public override Node Clone()
+		{
+			KeyValueNode clone = new KeyValueNode(this.FileOrigin);
+			clone.Key = this.Key;
+			clone.Value = this.Value;
+			clone.Operator = this.Operator;
+			clone.Depth = this.Depth;
+			return clone;
+		}
 	}
 
     class SingleValueNode : Node, IValueNode
@@ -78,9 +111,23 @@ namespace PdxScriptPlusPlus.Script
 
 		public String Value { get; set; }
 
+		public bool HasStringValue()
+		{
+			return this.Value.StartsWith('"') && this.Value.EndsWith('"');
+		}
+
 		public override string GetString()
 		{
 			return Value;
+		}
+
+		public override Node Clone()
+		{
+			SingleValueNode clone = new SingleValueNode(this.FileOrigin);
+			clone.Value = this.Value;
+			clone.Depth = this.Depth;
+			return clone;
+
 		}
 	}
 
